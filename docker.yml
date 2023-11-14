@@ -1,0 +1,81 @@
+---
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: Restarting the docker service
+    service:
+      name: docker
+      state: restarted
+      enabled: true
+
+  - name: Making a directory for docker file (Ubuntu)
+    file:
+      path: ./root/demo-dockerfile
+      state: directory
+      owner: root
+      group: root
+      mode: '0755'
+    #when: ansible_distribution == "Ubuntu"
+
+  - name: Making a directory for docker file (CentOS)
+    file:
+      path: ./root/demo-dockerfile_1
+      state: directory
+      owner: root
+      group: root
+      mode: '0755'
+    #when: ansible_distribution == "CentOS"
+
+  - name: Copying docker file (Ubuntu)
+    copy:
+      src: ./dockerfile
+      dest: ./root/demo-dockerfile/dockerfile
+      owner: root
+      group: root
+      mode: '0755'
+    when: ansible_distribution == "Ubuntu"
+
+  - name: Copying docker file (CentOS)
+    copy:
+      src: ./dockerfile_1
+      dest: ./root/demo-dockerfile/dockerfile_1
+      owner: root
+      group: root
+      mode: '0755'
+    when: ansible_distribution == "CentOS"
+
+  - name: Building docker (Ubuntu)
+    docker_image:
+      name: container_ansible
+      build:
+        path: ./root/demo-dockerfile
+        args:
+          listen_port: 8080
+      state: present
+      source: build
+    when: ansible_distribution == "Ubuntu"
+
+  - name: Containerize an application (Ubuntu)
+    shell:
+      docker run -it -d -p 8080:80 container_ansible
+    when: ansible_distribution == "Ubuntu"
+
+  - name: Building docker (CentOS)
+    docker_image:
+      name: container_ansible
+      build:
+        path: ./root/demo-dockerfile_1
+        args:
+          listen_port: 8080
+      state: present
+      source: build
+    when: ansible_distribution == "CentOS"
+
+  - name: Containerize an application (CentOS)
+    shell:
+      docker run -it -d -p 8080:80 container_ansible
+    when: ansible_distribution == "CentOS"
+
+
+
