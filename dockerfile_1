@@ -1,15 +1,14 @@
 FROM centos:latest
 MAINTAINER rose <qrataller@tip.edu.ph>
 
-# to skip prompts
+# To skip prompts
 arg debian_frontend=noninteractive
 
-# to update packages
-run apt update; apt dist-upgrade -y
+# To update packages
+run yum update; yum upgrade -y
 
-# to install packages
-run apt install -y apache2 mariadb-server
+# to install package
+run yum install -y httpd mariadb-server
 
-# to set an entrypoint
-entrypoint apache2ctl -d foreground
-
+# To set an entrypoint
+entrypoint usr/sbin/httpd -d foreground

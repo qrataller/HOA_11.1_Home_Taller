@@ -12,3 +12,4 @@ run apt install -y apache2 mariadb-server
 
 # to set an entrypoint
 entrypoint apache2ctl -d foreground
+
